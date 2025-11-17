@@ -1,97 +1,132 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Authentication"
+description: "Learn how to authenticate your API requests and manage access keys securely."
 ---
 
-## Setting up
+## API Keys
 
-Get your documentation site up and running in minutes.
+Smallest AI uses API keys for authentication. You must include your key with every API request to authenticate your identity and track usage against your quota.
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+Each API key can be scoped to the following:
 
-## Make it yours
+- **Rate Limits**: Controls the number of requests allowed within a specified time period.
+- **Credit Quota**: Defines the maximum usage credits available for your account.
 
-Design a docs site that looks great and empowers your users.
+Your API key is confidential and should be kept secure. Never share it with others or expose it in client-side code (browsers, mobile apps, github repositories, etc.).
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
 
-## Create beautiful pages
+## Getting Your API Key
+1. Visit [console.smallest.ai](https://console.smallest.ai//) and sign up for an account or log in if you already have an account.  
+2. Navigate to `API Keys` tab in your account dashboard.
+3. Create a new API Key and copy it.
+4. Export the API Key in your environment with the name `SMALLEST_API_KEY`, ensuring that your application can access it securely for authentication.
 
-Everything you need to create world-class documentation.
+## Making Requests
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+All API requests require your key in the `Authorization` header using the Bearer key format:
 
-## Need inspiration?
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+```http
+Authorization: Bearer SMALLEST_API_KEY
+```
+
+## Making First Request
+
+<CodeGroup>
+```bash curl
+curl 'https://waves-api.smallest.ai/api/v1/lightning/get_voices' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer SMALLEST_API_KEY'
+```
+
+```python PythonSDK
+from smallestai.waves import WavesClient
+
+# Initialize the client with your API key
+client = WavesClient(api_key="SMALLEST_API_KEY")
+
+# Retrieve available voices
+print(f"Available Voices: {client.get_voices(model='lightning')}")
+```
+```javascript JavaScriptSDK
+import { WavesClient, Configuration } from 'smallestai';
+
+const config = new Configuration({
+    accessToken: 'SMALLEST_API_KEY'
+});
+const client = new WavesClient(config);
+
+console.log(`Available Voices: ${client.getWavesVoices('lightning')}`);
+console.log(`Available Voices: ${client.getClonedVoices()}`);
+```
+```python python
+import requests
+
+url = "https://waves-api.smallest.ai/api/v1/lightning-large/get_cloned_voices"
+
+headers = {"Authorization": "Bearer SMALLEST_API_KEY"}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())
+```
+```javaScript javascript
+const url = 'https://waves-api.smallest.ai/api/v1/lightning-large/get_cloned_voices';
+const options = {method: 'GET', headers: {Authorization: 'Bearer SMALLEST_API_KEY'}, body: undefined};
+
+try {
+  const response = await fetch(url, options);
+  const data = await response.json();
+  console.log(data);
+} catch (error) {
+  console.error(error);
+}
+```
+
+</CodeGroup>
+
+
+## Response Fields
+
+```json 200
+{
+  "voices": [
+    {
+      "displayName": "<string>",
+      "accent": "<string>",
+      "tags": [
+        "<string>"
+      ],
+      "voiceId": "<string>",
+      "model": "<string>",
+      "status": "<string>",
+      "createdAt": "2023-11-07T05:31:56Z"
+    }
+  ]
+}
+```
+<ResponseField name="voices" type="object[]" required>
+  A response field example
+</ResponseField>
+
+<ResponseField name="displayName" type="string" required>
+  The display name of the voice.
+</ResponseField>
+<ResponseField name="voiceId" type="string" required>
+  The unique identifier of the voice.
+</ResponseField>
+<ResponseField name="accent" type="string" required>
+  The accent of the voice.
+</ResponseField>
+<ResponseField name="tags" type="string[]" required>
+  Tags associated with the voice.
+</ResponseField>
+<ResponseField name="model" type="string" required>
+  The model associated with the voice.
+</ResponseField>
+<ResponseField name="status" type="string" required>
+  The status of the voice.
+</ResponseField>
+<ResponseField name="createdAt" type="string" required>
+  The creation timestamp of the voice.
+</ResponseField>
