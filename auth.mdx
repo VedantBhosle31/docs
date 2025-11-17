@@ -1,0 +1,132 @@
+---
+title: "Authentication"
+description: "Learn how to authenticate your API requests and manage access keys securely."
+---
+
+## API Keys
+
+Smallest AI uses API keys for authentication. You must include your key with every API request to authenticate your identity and track usage against your quota.
+
+Each API key can be scoped to the following:
+
+- **Rate Limits**: Controls the number of requests allowed within a specified time period.
+- **Credit Quota**: Defines the maximum usage credits available for your account.
+
+Your API key is confidential and should be kept secure. Never share it with others or expose it in client-side code (browsers, mobile apps, github repositories, etc.).
+
+
+## Getting Your API Key
+1. Visit [console.smallest.ai](https://console.smallest.ai//) and sign up for an account or log in if you already have an account.  
+2. Navigate to `API Keys` tab in your account dashboard.
+3. Create a new API Key and copy it.
+4. Export the API Key in your environment with the name `SMALLEST_API_KEY`, ensuring that your application can access it securely for authentication.
+
+## Making Requests
+
+All API requests require your key in the `Authorization` header using the Bearer key format:
+
+
+```http
+Authorization: Bearer SMALLEST_API_KEY
+```
+
+## Making First Request
+
+<CodeGroup>
+```bash curl
+curl 'https://waves-api.smallest.ai/api/v1/lightning/get_voices' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer SMALLEST_API_KEY'
+```
+
+```python PythonSDK
+from smallestai.waves import WavesClient
+
+# Initialize the client with your API key
+client = WavesClient(api_key="SMALLEST_API_KEY")
+
+# Retrieve available voices
+print(f"Available Voices: {client.get_voices(model='lightning')}")
+```
+```javascript JavaScriptSDK
+import { WavesClient, Configuration } from 'smallestai';
+
+const config = new Configuration({
+    accessToken: 'SMALLEST_API_KEY'
+});
+const client = new WavesClient(config);
+
+console.log(`Available Voices: ${client.getWavesVoices('lightning')}`);
+console.log(`Available Voices: ${client.getClonedVoices()}`);
+```
+```python python
+import requests
+
+url = "https://waves-api.smallest.ai/api/v1/lightning-large/get_cloned_voices"
+
+headers = {"Authorization": "Bearer SMALLEST_API_KEY"}
+
+response = requests.get(url, headers=headers)
+
+print(response.json())
+```
+```javaScript javascript
+const url = 'https://waves-api.smallest.ai/api/v1/lightning-large/get_cloned_voices';
+const options = {method: 'GET', headers: {Authorization: 'Bearer SMALLEST_API_KEY'}, body: undefined};
+
+try {
+  const response = await fetch(url, options);
+  const data = await response.json();
+  console.log(data);
+} catch (error) {
+  console.error(error);
+}
+```
+
+</CodeGroup>
+
+
+## Response Fields
+
+```json 200
+{
+  "voices": [
+    {
+      "displayName": "<string>",
+      "accent": "<string>",
+      "tags": [
+        "<string>"
+      ],
+      "voiceId": "<string>",
+      "model": "<string>",
+      "status": "<string>",
+      "createdAt": "2023-11-07T05:31:56Z"
+    }
+  ]
+}
+```
+<ResponseField name="voices" type="object[]" required>
+  A response field example
+</ResponseField>
+
+<ResponseField name="displayName" type="string" required>
+  The display name of the voice.
+</ResponseField>
+<ResponseField name="voiceId" type="string" required>
+  The unique identifier of the voice.
+</ResponseField>
+<ResponseField name="accent" type="string" required>
+  The accent of the voice.
+</ResponseField>
+<ResponseField name="tags" type="string[]" required>
+  Tags associated with the voice.
+</ResponseField>
+<ResponseField name="model" type="string" required>
+  The model associated with the voice.
+</ResponseField>
+<ResponseField name="status" type="string" required>
+  The status of the voice.
+</ResponseField>
+<ResponseField name="createdAt" type="string" required>
+  The creation timestamp of the voice.
+</ResponseField>
